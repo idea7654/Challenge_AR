@@ -139,8 +139,8 @@ function onButtonClicked() {
           root: document.getElementById("overlay"),
         }, //dom-overlay사용시 어떤 요소에 적용할 것인지 명시
         depthSensing: {
-          usagePreference: ["cpu-optimized", "gpu-optimized"],
-          formatPreference: ["luminance-alpha", "float32"],
+          usagePreference: ["gpu-optimized"],
+          formatPreference: ["luminance-alpha"],
         },
       })
       .then(onSessionStarted, onRequestSessionError);
@@ -255,7 +255,6 @@ function onXRFrame(t, frame) {
   let session = frame.session; //매 프레임의 session
   let xrViewerPose = frame.getViewerPose(xrRefSpace); //xrViewerPose
   session.requestAnimationFrame(onXRFrame); //onXRFrame을 반복 호출
-
   // let depthInfo = null;
   // if (xrViewerPose) {
   //   depthInfo = frame.getDepthInformation(xrViewerPose.views[0]);
