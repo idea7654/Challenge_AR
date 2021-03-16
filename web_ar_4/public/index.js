@@ -3,7 +3,15 @@
 let renderer = null;
 let scene = null;
 let camera = null;
-let flag = true;
+
+let buildInfo = null;
+let gps = null;
+let map = null;
+let count = 0;
+let service = null;
+let compassDegree = 0;
+let watch = null;
+
 const initScene = (gl, session) => {
   //-- scene, camera(threeJs의 카메라, 씬 설정)
   scene = new THREE.Scene();
@@ -138,6 +146,76 @@ function onSessionEnded(event) {
   gl = null;
 }
 
+function getGPS() {
+  window.addEventListener("deviceorientationabsolute", handleMotion, true);
+  function success(position) {
+    gps = {
+      lat: position.coords.latitude,
+      lon: position.coords.longitude,
+    };
+
+    async function initMap(lat, lon) {
+      const pyrmont = await new google.maps.LatLng(lat, lon);
+      map = await new google.maps.Map(document.createElement("div"), {
+        center: pyrmont,
+        zoom: 15,
+      });
+      const request = await {
+        location: pyrmont,
+        radius: "30",
+        types: ["school"],
+      };
+      service = await new google.maps.places.PlacesService(map);
+      await service.nearbySearch(request, callback);
+    }
+
+    function callback(results, status) {
+      //            if (status == google.maps.places.PlacesServiceStatus.OK) {
+      //                buildInfo = results;
+      //            }
+      buildInfo = results;
+    }
+
+    if (buildInfo.length === 0) {
+      let fakeGps = {
+        lat: 0,
+        lon: 0,
+      };
+      fakeGps.lat =
+        gps.lat + (count / 111000) * Math.cos((compassDegree * Math.PI) / 180);
+      fakeGps.lon =
+        gps.lon + (count / 111000) * Math.sin((compassDegree * Math.PI) / 180);
+      count = count + 10;
+      initMap(fakeGps.lat, fakeGps.lon);
+    }
+
+    if (buildInfo.length > 0) {
+      console.log(buildInfo);
+
+      navigator.geolocation.clearWatch(watch);
+    }
+  }
+
+  function error() {
+    alert("error");
+  }
+  const options = {
+    enableHighAccuracy: true,
+    maximumAge: 300000,
+    timeout: 27000,
+  };
+  watch = navigator.geolocation.watchPosition(success, error, options);
+}
+
+function handleMotion(event) {
+  const compass = event.webkitCompassHeading || Math.abs(event.alpha - 360);
+  compassDegree = Math.ceil(compass);
+  //    navigator.geolocation.clearWatch(watch);
+  //const div = document.getElementById("artInfo");
+  //div.style.visibility = "visible";
+  //div.innerHTML = `gyro: ${compassDegree}`;
+}
+
 function updateAnimation() {
   //threeJs의 오브젝트들의 애니메이션을 넣는 곳
 }
@@ -155,3 +233,4 @@ function onXRFrame(t, frame) {
 }
 
 checkXR(); //브라우저가 로딩되면 checkXR을 실행
+getGPS();
