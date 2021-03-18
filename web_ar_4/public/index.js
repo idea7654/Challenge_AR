@@ -7,7 +7,6 @@ let camera = null;
 let buildInfo = null;
 let gps = null;
 let map = null;
-let count = 0;
 let service = null;
 let compassDegree = 0;
 let watch = null;
@@ -177,21 +176,10 @@ function getGPS() {
     }
 
     if (buildInfo.length === 0) {
-      let fakeGps = {
-        lat: 0,
-        lon: 0,
-      };
-      fakeGps.lat =
-        gps.lat + (count / 111000) * Math.cos((compassDegree * Math.PI) / 180);
-      fakeGps.lon =
-        gps.lon + (count / 111000) * Math.sin((compassDegree * Math.PI) / 180);
-      count = count + 10;
-      initMap(fakeGps.lat, fakeGps.lon);
+      initMap(gps.lat, gps.lon);
     }
 
     if (buildInfo.length > 0) {
-      console.log(buildInfo);
-
       navigator.geolocation.clearWatch(watch);
     }
   }
