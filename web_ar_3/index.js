@@ -134,7 +134,7 @@ function onButtonClicked() {
       .requestSession("immersive-ar", {
         //세션요청
         optionalFeatures: ["dom-overlay"], //옵션(ex: dom-overlay, hit-test 등)
-        requiredFeatures: ["hit-test", "depth-sensing"], //필수옵션
+        requiredFeatures: ["hit-test"], //필수옵션
         domOverlay: {
           root: document.getElementById("overlay"),
         }, //dom-overlay사용시 어떤 요소에 적용할 것인지 명시
