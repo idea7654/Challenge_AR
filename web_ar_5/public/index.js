@@ -231,21 +231,25 @@ function getGPS() {
         // const angle =
         //   360 - compassDegree - (Math.acos(x / distance) * 180) / Math.PI;
         const angle = (Math.atan2(y, x) * 180) / Math.PI;
+        // if (angle < 0) {
+        //   angle = angle + 360;
+        // }
+        let realAngle = 0;
         if (angle < 0) {
-          angle = angle + 360;
+          realAngle = angle + 360 - compassDegree + 20;
+        } else {
+          realAngle = angle - compassDegree + 20;
         }
-        const realAngle = angle - compassDegree;
         //유저 디바이스 - 90도
         //건물 - 200도
         sortArr.push({
           name: data.name,
           distance: distance,
-          angle: angle,
+          angle: realAngle,
           x: x,
           y: y,
         });
       });
-      console.log(sortArr);
       sortArr.sort((a, b) => {
         return a.angle < b.angle ? -1 : a.angle > b.angle ? 1 : 0;
       });

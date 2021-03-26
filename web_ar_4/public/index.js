@@ -173,6 +173,7 @@ function getGPS() {
       //                buildInfo = results;
       //            }
       buildInfo = results;
+      console.log(buildInfo);
     }
 
     if (buildInfo.length === 0) {

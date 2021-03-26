@@ -138,10 +138,6 @@ function onButtonClicked() {
         domOverlay: {
           root: document.getElementById("overlay"),
         }, //dom-overlay사용시 어떤 요소에 적용할 것인지 명시
-        depthSensing: {
-          usagePreference: ["gpu-optimized"],
-          formatPreference: ["luminance-alpha"],
-        },
       })
       .then(onSessionStarted, onRequestSessionError);
   } else {
