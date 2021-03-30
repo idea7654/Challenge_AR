@@ -1,15 +1,20 @@
-import React from "react";
-import { buildInfo } from "../public/index";
-import { selectedObject } from "../public/index";
-
-setInterval(check, 1000);
-
-function check() {
-    console.log(selectedObject);
-}
+import React, { useState } from "react";
+import { selectedObject, xrSession } from "../public/index";
 
 const App = () => {
-    return <div>안녕하세요!!!</div>;
+    const checkSelected = setInterval(check, 1000);
+    const [staticVar, setStaticVar] = useState(null);
+    function check() {
+        if (!xrSession && selectedObject) {
+            clearInterval(checkSelected);
+            setStaticVar(selectedObject);
+        }
+    }
+    return (
+        <div>
+            {staticVar ? <div>선택하신 건물은 {staticVar}입니다!!</div> : ""}
+        </div>
+    );
 };
 
 export default App;

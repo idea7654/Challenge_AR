@@ -11,7 +11,7 @@ import { ColladaLoader } from "../three/examples/jsm/loaders/ColladaLoader.js";
 let renderer = null;
 let scene = null;
 let camera = null;
-export let buildInfo = [];
+let buildInfo = [];
 let gps = null;
 let map = null;
 let service = null;
@@ -82,7 +82,7 @@ const initScene = (gl, session) => {
 // AR세션을 시작하는 버튼
 const xrButton = document.getElementById("xr-button");
 // xrSession
-let xrSession = null;
+export let xrSession = null;
 // xrReferenceSpace
 let xrRefSpace = null;
 
@@ -296,6 +296,7 @@ function touchObj(event) {
         const object = intersects[0].object.parent.parent.parent.parent.name;
         if (object === "배재대 김옥균관") {
             selectedObject = object;
+            onSessionEnded();
         }
         console.log(object, selectedObject);
     } else {
