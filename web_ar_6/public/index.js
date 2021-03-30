@@ -296,7 +296,7 @@ function touchObj(event) {
         const object = intersects[0].object.parent.parent.parent.parent.name;
         if (object === "배재대 김옥균관") {
             selectedObject = object;
-            onSessionEnded();
+            xrSession.end();
         }
     } else {
         //div.style.visibility = "hidden";
