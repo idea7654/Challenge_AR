@@ -11,7 +11,7 @@ import { ColladaLoader } from "../three/examples/jsm/loaders/ColladaLoader.js";
 let renderer = null;
 let scene = null;
 let camera = null;
-let buildInfo = [];
+export let buildInfo = [];
 let gps = null;
 let map = null;
 let service = null;
@@ -298,7 +298,6 @@ function touchObj(event) {
             selectedObject = object;
             onSessionEnded();
         }
-        console.log(object, selectedObject);
     } else {
         //div.style.visibility = "hidden";
     }
