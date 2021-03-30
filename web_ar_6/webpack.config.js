@@ -18,7 +18,7 @@ module.exports = {
         alias: {
             "@Context": path.resolve(__dirname, "src/context/"),
         },
-        modules: ["node_modules"],
+        modules: ["./node_modules"],
         extensions: [".js", ".json", ".jsx", ".css"],
     },
     // mode: "development",

@@ -1,10 +1,10 @@
 import * as THREE from "three";
-import { ColladaLoader } from "three/examples/jsm/loaders/ColladaLoader";
+import { ColladaLoader } from "three-collada-loader";
 // import { Interaction } from "../node_modules/three.interaction/build/three.interaction.module.js";
 //import * as THREE from "three";
 // import { ColladaLoader } from "three/examples/jsm/loaders/ColladaLoader";
-// import * as THREE from "https://unpkg.com/three/build/three.module.js";
-// import { ColladaLoader } from "https://threejs.org/examples/jsm/loaders/ColladaLoader.js";
+// import * as THREE from "https://unpkg.com/three@0.126.1/build/three.module.js";
+// import { ColladaLoader } from "https://unpkg.com/three@0.126.1/examples/jsm/loaders/ColladaLoader.js";
 
 let renderer = null;
 let scene = null;
