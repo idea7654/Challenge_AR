@@ -1,8 +1,9 @@
 import React from "react";
 import { buildInfo } from "../public/index";
-console.log(buildInfo);
+import { selectedObject } from "../public/index";
+console.log(selectedObject);
 const App = () => {
-  return <div></div>;
+    return <div></div>;
 };
 
 export default App;

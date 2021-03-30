@@ -24,7 +24,7 @@ let setFlag = true;
 let pivot = null;
 let controller = null;
 let objects = [];
-let selectedObject = null;
+export let selectedObject = null;
 
 const initScene = (gl, session) => {
     //-- scene, camera(threeJs의 카메라, 씬 설정)
