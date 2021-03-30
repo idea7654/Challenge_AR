@@ -292,12 +292,12 @@ function touchObj(event) {
     raycast.setFromCamera(vector, camera);
     const intersects = raycast.intersectObjects(objects, true);
     //const div = document.getElementById("artInfo");
-    console.log(intersects);
     if (intersects.length !== 0) {
         const object = intersects[0].object.parent.parent.parent.parent.name;
         if (object === "배재대 김옥균관") {
             selectedObject = object;
         }
+        console.log(object, selectedObject);
     } else {
         //div.style.visibility = "hidden";
     }
