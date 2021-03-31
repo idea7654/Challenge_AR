@@ -11,7 +11,7 @@ import { ColladaLoader } from "../three/examples/jsm/loaders/ColladaLoader.js";
 let renderer = null;
 let scene = null;
 let camera = null;
-export let buildInfo = [];
+let buildInfo = [];
 let gps = null;
 let map = null;
 let service = null;
@@ -216,26 +216,26 @@ function getGPS() {
         };
 
         if (buildInfo.length === 0) {
-            // initMap(gps.lat, gps.lon);
-            initMap(fakeGPS.lat, fakeGPS.lon);
+            initMap(gps.lat, gps.lon);
+            // initMap(fakeGPS.lat, fakeGPS.lon);
         }
 
         if (buildInfo.length > 0) {
             buildInfo.forEach((data) => {
                 const latitude = data.geometry.location.toJSON().lat;
                 const longitude = data.geometry.location.toJSON().lng;
-                // const distance = Math.sqrt(
-                //   (latitude - gps.lat) * (latitude - gps.lat) +
-                //     (longitude - gps.lon) * (longitude - gps.lon)
-                // );
-                // const x = latitude - gps.lat;
-                // const y = longitude - gps.lon;
                 const distance = Math.sqrt(
-                    (latitude - fakeGPS.lat) * (latitude - fakeGPS.lat) +
-                        (longitude - fakeGPS.lon) * (longitude - fakeGPS.lon)
+                    (latitude - gps.lat) * (latitude - gps.lat) +
+                        (longitude - gps.lon) * (longitude - gps.lon)
                 );
-                const x = latitude - fakeGPS.lat;
-                const y = longitude - fakeGPS.lon;
+                const x = latitude - gps.lat;
+                const y = longitude - gps.lon;
+                // const distance = Math.sqrt(
+                //     (latitude - fakeGPS.lat) * (latitude - fakeGPS.lat) +
+                //         (longitude - fakeGPS.lon) * (longitude - fakeGPS.lon)
+                // );
+                // const x = latitude - fakeGPS.lat;
+                // const y = longitude - fakeGPS.lon;
                 const angle = (Math.atan2(y, x) * 180) / Math.PI;
                 let realAngle = 0;
                 if (angle < 0) {
