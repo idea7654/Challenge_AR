@@ -10,7 +10,7 @@ const App = () => {
         if (!xrSession && selectedObject) {
             clearInterval(checkSelected);
             setStaticVar(selectedObject);
-            setSelectedPage(redirectPage(obj));
+            setSelectedPage(redirectPage(selectedObject));
         }
     }
 
