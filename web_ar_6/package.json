@@ -20,7 +20,6 @@
         "html-webpack-plugin": "5.3.1",
         "react": "17.0.1",
         "react-dom": "17.0.1",
-        "react-router-dom": "^5.2.0",
         "three": "0.126.1",
         "three-collada-loader": "0.0.1",
         "webpack": "5.25.1",
