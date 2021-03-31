@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { selectedObject, xrSession } from "../public/index";
 import Okkyun from "./Page/Okkyun";
 import Landing from "./Page/Landing";
-const App = ({ history }) => {
+const App = () => {
     const checkSelected = setInterval(check, 1000);
     const [staticVar, setStaticVar] = useState(null);
-    const [selectedPage, setSeletedPage] = useState(null);
+    const [selectedPage, setSelectedPage] = useState(null);
     function check() {
         if (!xrSession && selectedObject) {
             clearInterval(checkSelected);
