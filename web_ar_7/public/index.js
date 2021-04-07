@@ -10,7 +10,9 @@ let watch = null;
 let controller = null;
 let model = null;
 let otherPlayer = null;
-const socket = io.connect("https://c29d29d46f10.ngrok.io");
+let playerVector = null;
+let setFlag = true;
+const socket = io.connect("https://9afbc35b9f62.ngrok.io");
 
 const initScene = (gl, session) => {
   //-- scene, camera(threeJs의 카메라, 씬 설정)
@@ -43,6 +45,7 @@ const initScene = (gl, session) => {
     const size = box.getSize(new THREE.Vector3());
 
     collada.scene.position.set(-c.x, size.y / 2 - c.y, -c.z);
+    collada.scene.scale.set(0.001, 0.001, 0.001);
     model = new THREE.Object3D();
     model.add(collada.scene);
   });
@@ -54,6 +57,8 @@ const initScene = (gl, session) => {
   renderer.xr.setReferenceSpaceType("local"); //
   renderer.xr.setSession(session);
   document.body.appendChild(renderer.domElement);
+
+  getGPS();
   //---
 };
 
@@ -66,6 +71,11 @@ let xrRefSpace = null;
 
 //렌더링을 위한 캔버스 OpenGL 컨텍스트
 let gl = null;
+
+const fakeGps = {
+  lat: 36.31774,
+  lon: 127.370634,
+};
 
 function checkXR() {
   if (!window.isSecureContext) {
@@ -166,15 +176,18 @@ function getGPS() {
       lat: position.coords.latitude,
       lon: position.coords.longitude,
     };
+
     socket.emit("sendPlayerInfo", {
       id: socket.id,
-      gps: gps,
+      //gps: gps,
+      gps: fakeGps,
       degree: compassDegree,
     });
   }
 
   function error() {
-    alert("error");
+    //alert("error");
+    console.log("error");
   }
   const options = {
     enableHighAccuracy: true,
@@ -229,22 +242,30 @@ function onXRFrame(t, frame) {
 }
 
 checkXR(); //브라우저가 로딩되면 checkXR을 실행
-getGPS();
+//getGPS();
 
 //socket
 
-socket.on("sendPlayerInfo", (data) => {
+socket.on("sendPlayerInfo", async (data) => {
   //players
-  const index = data.findIndex((i) => i.id == socket.id);
-  data = data.splice(index, 1);
-  otherPlayer = data[0];
-  if (otherPlayer) {
-    const lat = otherPlayer.gps.lat - gps.lat;
-    const lon = otherPlayer.gps.lon - gps.lon;
+  const index = await data.findIndex((i) => i.id == socket.id);
+  await data.splice(index, 1);
+  otherPlayer = await data[0];
+  if (otherPlayer && setFlag) {
+    const lat = -(otherPlayer.gps.lat - fakeGps.lat);
+    const lon = -(otherPlayer.gps.lon - fakeGps.lon);
     const x = lat * 111000;
     const z = lon * 111000;
+    console.log(x);
     model.position.set(x, 0, z).applyMatrix4(controller.matrixWorld);
     model.quaternion.setFromRotationMatrix(controller.matrixWorld);
-    scene.add(model);
+    const pivot = new THREE.Object3D();
+    pivot.position.set(playerVector.x, playerVector.y, playerVector.z);
+    pivot.add(model);
+    pivot.rotation.y += (compassDegree * Math.PI) / 360;
+    scene.add(pivot);
+    // scene.add(model);
+    console.log(model.getWorldPosition(), compassDegree);
+    setFlag = false;
   }
 });
