@@ -11,7 +11,7 @@ let controller = null;
 let model = null;
 let otherPlayer = null;
 let playerVector = null;
-let setFlag = true;
+let otherObject = null;
 const socket = io.connect("https://9afbc35b9f62.ngrok.io");
 
 const initScene = (gl, session) => {
@@ -251,21 +251,32 @@ socket.on("sendPlayerInfo", async (data) => {
   const index = await data.findIndex((i) => i.id == socket.id);
   await data.splice(index, 1);
   otherPlayer = await data[0];
-  if (otherPlayer && setFlag) {
+  if (otherPlayer && !otherObject) {
     const lat = -(otherPlayer.gps.lat - fakeGps.lat);
     const lon = -(otherPlayer.gps.lon - fakeGps.lon);
     const x = lat * 111000;
     const z = lon * 111000;
-    console.log(x);
     model.position.set(x, 0, z).applyMatrix4(controller.matrixWorld);
     model.quaternion.setFromRotationMatrix(controller.matrixWorld);
-    const pivot = new THREE.Object3D();
-    pivot.position.set(playerVector.x, playerVector.y, playerVector.z);
-    pivot.add(model);
-    pivot.rotation.y += (compassDegree * Math.PI) / 360;
-    scene.add(pivot);
-    // scene.add(model);
-    console.log(model.getWorldPosition(), compassDegree);
-    setFlag = false;
+    // const pivot = new THREE.Object3D();
+    // pivot.position.set(playerVector.x, playerVector.y, playerVector.z);
+    // pivot.add(model);
+    // pivot.rotation.y += (compassDegree * Math.PI) / 360;
+    // scene.add(pivot);
+    // console.log(model.getWorldPosition(), compassDegree);
+
+    otherObject = new THREE.Object3D();
+    otherObject.position.set(playerVector.x, playerVector.y, playerVector.z);
+    otherObject.add(model);
+    otherObject.rotation.y += (compassDegree * Math.PI) / 360;
+    scene.add(otherObject);
+  }
+  if (otherPlayer && otherObject) {
+    const lat = -(otherPlayer.gps.lat - fakeGps.lat);
+    const lon = -(otherPlayer.gps.lon - fakeGps.lon);
+    const x = lat * 111000;
+    const z = lon * 111000;
+    otherObject.position.set(playerVector.x, playerVector.y, playerVector.z);
+    otherObject.rotation.y += (compass * Math.PI) / 360;
   }
 });
