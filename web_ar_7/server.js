@@ -2,9 +2,8 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
-let players = [{ id: 1, gps: { lat: 36.31774, lon: 127.370638 }, degree: 180 }];
-
-app.use(cors());
+let players = [{ id: 1, gps: { lat: 36.318031, lon: 127.367511 }, degree: 0 }];
+app.use(cors({ credentials: true }));
 app.use(express.static("public"));
 
 const server = app.listen(3000);
@@ -31,5 +30,9 @@ io.on("connection", (socket) => {
         players.splice(index, 1);
       }
     });
+  });
+
+  socket.on("working", (data) => {
+    console.log(data);
   });
 });

@@ -12,7 +12,8 @@ let model = null;
 let otherPlayer = null;
 let playerVector = null;
 let otherObject = null;
-const socket = io.connect("https://9afbc35b9f62.ngrok.io");
+const info = document.getElementById("info");
+const socket = io.connect("https://010c8f89604e.ngrok.io");
 
 const initScene = (gl, session) => {
   //-- scene, camera(threeJs의 카메라, 씬 설정)
@@ -45,7 +46,7 @@ const initScene = (gl, session) => {
     const size = box.getSize(new THREE.Vector3());
 
     collada.scene.position.set(-c.x, size.y / 2 - c.y, -c.z);
-    collada.scene.scale.set(0.001, 0.001, 0.001);
+    //collada.scene.scale.set(0.001, 0.001, 0.001);
     model = new THREE.Object3D();
     model.add(collada.scene);
   });
@@ -129,7 +130,7 @@ function onSessionStarted(session) {
   xrButton.innerHTML = "Exit AR";
 
   if (session.domOverlayState) {
-    info.innerHTML = "DOM Overlay type: " + session.domOverlayState.type; //session의 dom overlay타입 명시. Ar환경에서는
+    info.innerHTML = "오브젝트가 설치될 때까지 움직이지 말아주세요!"; //session의 dom overlay타입 명시. Ar환경에서는
   }
 
   // create a canvas element and WebGL context for rendering
@@ -179,8 +180,8 @@ function getGPS() {
 
     socket.emit("sendPlayerInfo", {
       id: socket.id,
-      //gps: gps,
-      gps: fakeGps,
+      gps: gps,
+      // gps: fakeGps,
       degree: compassDegree,
     });
   }
@@ -251,12 +252,15 @@ socket.on("sendPlayerInfo", async (data) => {
   const index = await data.findIndex((i) => i.id == socket.id);
   await data.splice(index, 1);
   otherPlayer = await data[0];
+  socket.emit("success", "데이터 받아오기 성공");
   if (otherPlayer && !otherObject) {
-    const lat = -(otherPlayer.gps.lat - fakeGps.lat);
-    const lon = -(otherPlayer.gps.lon - fakeGps.lon);
-    const x = lat * 111000;
-    const z = lon * 111000;
-    model.position.set(x, 0, z).applyMatrix4(controller.matrixWorld);
+    const dlat = -(otherPlayer.gps.lat - gps.lat);
+    const dlon = -(otherPlayer.gps.lon - gps.lon);
+    //const lat = -(otherPlayer.gps.lat - fakeGps.lat);
+    //const lon = -(otherPlayer.gps.lon - fakeGps.lon);
+    const x = dlat * 111000;
+    const z = dlon * 111000;
+    model.position.set(0, 0, z).applyMatrix4(controller.matrixWorld);
     model.quaternion.setFromRotationMatrix(controller.matrixWorld);
     // const pivot = new THREE.Object3D();
     // pivot.position.set(playerVector.x, playerVector.y, playerVector.z);
@@ -266,17 +270,48 @@ socket.on("sendPlayerInfo", async (data) => {
     // console.log(model.getWorldPosition(), compassDegree);
 
     otherObject = new THREE.Object3D();
-    otherObject.position.set(playerVector.x, playerVector.y, playerVector.z);
+    //otherObject.position.set(playerVector.x, playerVector.y, playerVector.z);
     otherObject.add(model);
-    otherObject.rotation.y += (compassDegree * Math.PI) / 360;
+    const angle = (Math.atan2(z, x) * 180) / Math.PI - compassDegree + 20;
+    // const result = angle - compassDegree - 20;
+    let realAngle = 0;
+    if (angle < 0) {
+      realAngle = angle + 360;
+    }
+    if (angle > 360) {
+      realAngle = angle - 360;
+    }
+    otherObject.rotateY((-realAngle / 180) * Math.PI);
+    otherObject.name = otherPlayer.id;
     scene.add(otherObject);
+    info.innerHTML = `확인해보세요! 당신의 compass값은${compassDegree}`;
+    socket.emit("working", { realAngle, x, z });
   }
   if (otherPlayer && otherObject) {
-    const lat = -(otherPlayer.gps.lat - fakeGps.lat);
-    const lon = -(otherPlayer.gps.lon - fakeGps.lon);
-    const x = lat * 111000;
-    const z = lon * 111000;
-    otherObject.position.set(playerVector.x, playerVector.y, playerVector.z);
-    otherObject.rotation.y += (compass * Math.PI) / 360;
+    const dlat = -(otherPlayer.gps.lat - gps.lat);
+    const dlon = -(otherPlayer.gps.lon - gps.lon);
+    const x = dlat * 111000;
+    const z = dlon * 111000;
+    model.position.set(0, 0, z).applyMatrix4(controller.matrixWorld);
+    model.quaternion.setFromRotationMatrix(controller.matrixWorld);
+
+    const angle = (Math.atan2(z, x) * 180) / Math.PI - compassDegree + 20;
+
+    let realAngle = 0;
+    if (angle < 0) {
+      realAngle = angle + 360;
+    }
+    if (angle > 360) {
+      realAngle = angle - 360;
+    }
+
+    const targetObj = scene.getObjectByName(otherPlayer.id, true);
+    targetObj.rotateY((-realAngle / 180) * Math.PI);
+
+    //otherObject.position.set(playerVector.x, playerVector.y, playerVector.z);
+    //otherObject.rotation.y += (compass * Math.PI) / 360;
+    //생각해보자
+    //1. 설치
+    //2. 현재 있는것 -> 거리(z), 각도.
   }
 });
