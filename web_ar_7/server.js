@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
-let players = [{ id: 1, gps: { lat: 36.318031, lon: 127.367511 }, degree: 0 }];
+let players = [{ id: 1, gps: { lat: 36.317604, lon: 127.370634 }, degree: 0 }];
 app.use(cors({ credentials: true }));
 app.use(express.static("public"));
 
@@ -32,7 +32,7 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("working", (data) => {
+  socket.on("check", (data) => {
     console.log(data);
   });
 });
