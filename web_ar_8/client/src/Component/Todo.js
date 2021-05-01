@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TodoList from "./TodoList";
+import socketIO from "socket.io-client";
 const Todo = () => {
   const [Input, setInput] = useState("");
   const [List, setList] = useState([]);
   const [Id, setId] = useState(0);
-
+  const [SocketID, setSocketID] = useState(null);
+  const socket = socketIO.connect("http://localhost:5000");
   function onAdd(e) {
     e.preventDefault();
     setList(List.concat({ id: Id, text: Input, onFinish: false }));
@@ -21,12 +23,25 @@ const Todo = () => {
     const updated = List.map((i) => {
       if (i.id == id) {
         const updateItem = { ...i, onFinish: !i.onFinish };
+        if (updateItem.onFinish) {
+          socket.emit("GetItem");
+        } else {
+          socket.emit("RemoveItem");
+        }
         return updateItem;
       }
       return i;
     });
     setList(updated);
   }
+
+  useEffect(() => {
+    socket.emit("firstConnect");
+
+    socket.on("firstConnect", (data) => {
+      setSocketID(data);
+    });
+  }, []);
   return (
     <div>
       <div className="h-100 w-full flex items-center justify-center bg-teal-lightest font-sans">
