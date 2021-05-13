@@ -15,7 +15,6 @@ const Todo = () => {
   }
 
   function onRemove(id) {
-    console.log(id);
     setList(List.filter((i) => i.id != id));
   }
 
@@ -24,9 +23,9 @@ const Todo = () => {
       if (i.id == id) {
         const updateItem = { ...i, onFinish: !i.onFinish };
         if (updateItem.onFinish) {
-          socket.emit("GetItem");
+          socket.emit("GetItem", SocketID);
         } else {
-          socket.emit("RemoveItem");
+          socket.emit("RemoveItem", SocketID);
         }
         return updateItem;
       }

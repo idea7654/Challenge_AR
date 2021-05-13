@@ -2,7 +2,8 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
-let players = [{ id: 1, gps: { lat: 36.317604, lon: 127.370634 }, degree: 0 }];
+let players = [{ id: 1, gps: { lat: 36.345147, lon: 127.393537 }, degree: 0 }];
+// let players = [];
 app.use(cors({ credentials: true }));
 app.use(express.static("public"));
 
@@ -16,7 +17,6 @@ const io = require("socket.io")(server, {
 
 io.on("connection", (socket) => {
   socket.on("sendPlayerInfo", (data) => {
-    // console.log(data);
     if (players.findIndex((i) => i.id == data.id) == -1) {
       players.push(data);
     }

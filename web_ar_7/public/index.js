@@ -13,7 +13,7 @@ let otherPlayer = null;
 let playerVector = null;
 let otherObject = null;
 const info = document.getElementById("info");
-const socket = io.connect("https://79b6e8a67dc2.ngrok.io");
+const socket = io.connect("https://8312a04bff3c.ngrok.io");
 
 const initScene = (gl, session) => {
   //-- scene, camera(threeJs의 카메라, 씬 설정)
@@ -46,7 +46,7 @@ const initScene = (gl, session) => {
     const size = box.getSize(new THREE.Vector3());
 
     collada.scene.position.set(-c.x, size.y / 2 - c.y, -c.z);
-    //collada.scene.scale.set(0.001, 0.001, 0.001);
+    collada.scene.scale.set(0.001, 0.001, 0.001);
     model = new THREE.Object3D();
     model.add(collada.scene);
   });
@@ -74,8 +74,8 @@ let xrRefSpace = null;
 let gl = null;
 
 const fakeGps = {
-  lat: 36.31774,
-  lon: 127.370634,
+  lat: 36.317939,
+  lon: 127.367622,
 };
 
 function checkXR() {
@@ -180,8 +180,8 @@ function getGPS() {
 
     socket.emit("sendPlayerInfo", {
       id: socket.id,
-      //gps: gps,
-      gps: fakeGps,
+      gps: gps,
+      // gps: fakeGps,
       degree: compassDegree,
     });
   }
@@ -202,25 +202,6 @@ function handleMotion(event) {
   const compass = event.webkitCompassHeading || Math.abs(event.alpha - 360);
   compassDegree = Math.ceil(compass);
 }
-
-// function touchObj(event) {
-//   event.preventDefault();
-//   const x = (event.targetTouches[0].pageX / window.innerWidth) * 2 + -1;
-//   const y = -(event.targetTouches[0].pageY / window.innerHeight) * 2 + 1;
-
-//   const vector = new THREE.Vector2(x, y);
-//   const raycast = new THREE.Raycaster();
-
-//   raycast.setFromCamera(vector, camera);
-//   const intersects = raycast.intersectObjects(objects, true);
-//   //const div = document.getElementById("artInfo");
-//   console.log(intersects);
-//   if (intersects.length !== 0) {
-//     console.log(intersects[0].object.parent.parent.parent.parent.name);
-//   } else {
-//     //div.style.visibility = "hidden";
-//   }
-// }
 
 function updateAnimation() {
   //threeJs의 오브젝트들의 애니메이션을 넣는 곳
@@ -243,7 +224,7 @@ function onXRFrame(t, frame) {
 }
 
 checkXR(); //브라우저가 로딩되면 checkXR을 실행
-//getGPS();
+// getGPS();
 
 //socket
 
@@ -254,12 +235,13 @@ socket.on("sendPlayerInfo", async (data) => {
   otherPlayer = await data[0];
   socket.emit("success", "데이터 받아오기 성공");
   if (otherPlayer && !otherObject) {
-    //const dlat = -(otherPlayer.gps.lat - gps.lat);
-    //const dlon = -(otherPlayer.gps.lon - gps.lon);
-    const dlat = -(otherPlayer.gps.lon - fakeGps.lat);
-    const dlon = -(otherPlayer.gps.lon - fakeGps.lon);
-    const x = dlat * 111000;
-    const z = dlon * 111000;
+    const dlat = -(otherPlayer.gps.lat - gps.lat);
+    const dlon = -(otherPlayer.gps.lon - gps.lon);
+    // const dlat = -(otherPlayer.gps.lon - fakeGps.lat);
+    // const dlon = -(otherPlayer.gps.lon - fakeGps.lon);
+    const x = dlat * 11100;
+    const z = dlon * 11100;
+    //const distance = Math.sqrt(x * x + z * z);
     model.position.set(0, 0, z).applyMatrix4(controller.matrixWorld);
     model.quaternion.setFromRotationMatrix(controller.matrixWorld);
     // const pivot = new THREE.Object3D();
@@ -272,7 +254,7 @@ socket.on("sendPlayerInfo", async (data) => {
     otherObject = new THREE.Object3D();
     //otherObject.position.set(playerVector.x, playerVector.y, playerVector.z);
     otherObject.add(model);
-    const angle = (Math.atan2(z, x) * 180) / Math.PI - compassDegree + 20;
+    const angle = (Math.atan2(z, x) * 180) / Math.PI - compassDegree;
     // const result = angle - compassDegree - 20;
     let realAngle = 0;
     if (angle < 0) {
@@ -288,16 +270,19 @@ socket.on("sendPlayerInfo", async (data) => {
     socket.emit("working", { realAngle, x, z });
   }
   if (otherPlayer && otherObject) {
-    //const dlat = -(otherPlayer.gps.lat - gps.lat);
-    //const dlon = -(otherPlayer.gps.lon - gps.lon);
-    const dlat = -(otherPlayer.gps.lat - fakeGps.lat);
-    const dlon = -(otherPlayer.gps.lon - fakeGps.lon);
-    const x = dlat * 111000;
-    const z = dlon * 111000;
+    const dlat = -(otherPlayer.gps.lat - gps.lat);
+    const dlon = -(otherPlayer.gps.lon - gps.lon);
+    // const dlat = -(otherPlayer.gps.lat - fakeGps.lat);
+    // const dlon = -(otherPlayer.gps.lon - fakeGps.lon);
+    const x = dlat * 11100;
+    const z = dlon * 11100;
+    // const distance = Math.sqrt(x * x + z * z);
+    model.position.set(0, 0, 0);
+    model.rotation.set(0, 0, 0);
     model.position.set(0, 0, z).applyMatrix4(controller.matrixWorld);
     model.quaternion.setFromRotationMatrix(controller.matrixWorld);
 
-    const angle = (Math.atan2(z, x) * 180) / Math.PI - compassDegree + 20;
+    const angle = (Math.atan2(z, x) * 180) / Math.PI - compassDegree;
     info.innerHTML = `확인해보세요! 당신의 compass값은${compassDegree}`;
     let realAngle = 0;
     if (angle < 0) {
@@ -318,3 +303,5 @@ socket.on("sendPlayerInfo", async (data) => {
     //2. 현재 있는것 -> 거리(z), 각도.
   }
 });
+//캐릭터 선택
+//back for front
